@@ -8,6 +8,21 @@ import 'package:flutter_auth/components/rounded_button.dart';
 import 'package:flutter_auth/components/rounded_input_field.dart';
 import 'package:flutter_auth/components/rounded_password_field.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:logger/logger.dart';
+FirebaseAuth auth = FirebaseAuth.instance;
+String username_new= "";
+String password_new = "";
+final log = Logger(printer: PrettyPrinter(),);
+void createUsername(String s) {
+  username_new = s;
+
+}
+void createPassword(String s) {
+  password_new = s;
+
+}
 
 class Body extends StatelessWidget {
   @override
@@ -29,14 +44,20 @@ class Body extends StatelessWidget {
             ),
             RoundedInputField(
               hintText: "Your Email",
-              onChanged: (value) {},
+              onChanged: (value) {
+                createUsername(value);
+              },
             ),
             RoundedPasswordField(
-              onChanged: (value) {},
+              onChanged: (value) {
+                createPassword(value);
+              },
             ),
             RoundedButton(
               text: "SIGNUP",
-              press: () {},
+              press: () {
+                createUser(username_new, password_new);
+              },
             ),
             SizedBox(height: size.height * 0.03),
             AlreadyHaveAnAccountCheck(
@@ -75,4 +96,16 @@ class Body extends StatelessWidget {
       ),
     );
   }
+}
+void createUser(String email,String password) async {
+
+  await Firebase.initializeApp();
+  UserCredential newUser = await auth.createUserWithEmailAndPassword(
+      email: email, password: password);
+  print("username: " + email);
+  print("password: "+password);
+  log.e("new user is created");
+
+
+
 }
